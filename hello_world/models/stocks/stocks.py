@@ -1,8 +1,4 @@
 from __future__ import annotations
-"""
-Created on
-@author: <NAME>
-"""
 
 import io
 import time
@@ -13,6 +9,7 @@ import pandas as pd
 import pandas_ta as ta
 import pytz
 
+pd.set_option('display.max_columns', None)
 
 class Stock:
     """
@@ -56,6 +53,15 @@ class Stock:
             self.df['date'] = pd.to_datetime(self.df['timestamp'], unit='s')
             self.df.drop_duplicates(subset=['timestamp', 'stock'], inplace=True, keep='last')
             self.df.set_index('timestamp', inplace=True)  # set the index to timestamp
+            return
+        if isinstance(self.input_data, pd.DataFrame):
+            self.df = self.input_data
+            self.df['stock'] = self.stock_name
+            self.df.rename(columns={'Date': 'date', "Open": "open", "High": "high", "Low": "low", "Volume": "volume",
+                                    "Close": "close"}, inplace=True)
+            self.df.drop_duplicates(subset=['date', 'stock'], inplace=True, keep='last')
+            return
+        print(f"ERROR, data not in right format {type(self.input_data)} {self.input_data}")
 
     def _calculate_macd(self, n_fast=12, n_slow=26, n_signal=9):
         ema_fast = self.df['close'].ewm(span=n_fast, min_periods=n_slow).mean()
@@ -165,19 +171,16 @@ class Stock:
             rsi_down = ((self.df['rsi'] < 70) & (self.df['rsi'].shift(1) > 70))
             self.df.loc[rsi_down, 'alert_type'] = 'RSI SECURE'
 
-
-
         #  Supertrend watch
         if all(col in self.df.columns for col in ['SUPERTd_10_1.0', 'SUPERTd_11_2.0', 'SUPERTd_12_3.0']):
             st_alert = (
-                        (self.df['SUPERTd_10_1.0'] == 1) & (self.df['SUPERTd_10_1.0'].shift(1) == -1)
-                        |
-                        (self.df['SUPERTd_11_2.0'] == 1) & (self.df['SUPERTd_11_2.0'].shift(1) == -1)
-                        |
-                        (self.df['SUPERTd_12_3.0'] == 1) & (self.df['SUPERTd_12_3.0'].shift(1) == -1)
+                    (self.df['SUPERTd_10_1.0'] == 1) & (self.df['SUPERTd_10_1.0'].shift(1) == -1)
+                    |
+                    (self.df['SUPERTd_11_2.0'] == 1) & (self.df['SUPERTd_11_2.0'].shift(1) == -1)
+                    |
+                    (self.df['SUPERTd_12_3.0'] == 1) & (self.df['SUPERTd_12_3.0'].shift(1) == -1)
             )
             self.df.loc[st_alert, 'alert_type'] = 'Supertrend WATCH'
-
 
         # Supertrend
         if all(col in self.df.columns for col in ['SUPERTd_10_1.0', 'SUPERTd_11_2.0', 'SUPERTd_12_3.0']):
@@ -200,7 +203,6 @@ class Stock:
             )
             self.df.loc[st_down, 'alert_type'] = 'Supertrend DOWN'
 
-
         # Supertrend + Ichimoku
         if all(col in self.df.columns for col in
                ['ISA_9', 'ISB_26', 'SUPERT_10_1.0', 'SUPERT_11_2.0', 'SUPERT_12_3.0']):
@@ -221,7 +223,6 @@ class Stock:
             #            )
             # self.df.loc[st_down, 'alert_type'] = 'ichimoku_down'
 
-
         # Supertrend + sma20, we can also have a look on the long range sma50, ema200 ...
         if all(col in self.df.columns for col in ['ema', 'SUPERTd_10_1.0', 'SUPERTd_11_2.0', 'SUPERTd_12_3.0']):
             # Check if any of the supertrend moved in the correct direction:
@@ -238,7 +239,6 @@ class Stock:
             )
             self.df.loc[st_sma20, 'alert_type'] = 'supertrend + sma20 UP'
 
-
         # Return only the alerted rows:
         return self.df[self.df['alert_type'] != ''].dropna()
 
@@ -246,14 +246,19 @@ class Stock:
         """
         Calculate all
         """
-        self._calculate_macd()
-        self._calculate_rsi()
-        self._calculate_ichimoku()
-        self._calculate_ema()
-        self._calculate_sma()
-        self._calculate_supertrend()
+        try:
+            self._calculate_macd()
+            self._calculate_rsi()
+            self._calculate_ichimoku()
+            self._calculate_ema()
+            self._calculate_sma()
+            self._calculate_supertrend()
+        except Exception as e:
+            print(f"For {self.stock_name} {self.df} got error {e}")
         self.add_alerts()
         self.df.dropna()
+        # print(f"{self.df.iloc[5:][['date', 'close', 'histogram', 'rsi', 'ISA_9', 'ISB_26', 'ema', 'sma20', 'sma50',
+        # 'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0', 'SUPERTd_11_2.0', 'SUPERT_12_3.0', 'SUPERTd_12_3.0']]}")
         return self.df
 
     def save_to_pickle(self, storage: str | None = None, time_see: str | None = None, **kwargs) -> str:

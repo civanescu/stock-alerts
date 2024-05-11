@@ -7,8 +7,11 @@ from datetime import datetime
 
 import pytz
 
-import models.stock_requests as stock_requests
-import models.stocks as stocks
+from models import stock_requests, stocks
+from models.stocks import Stock
+
+# import models.stock_requests as stock_requests
+# import models.stocks as stocks
 
 eet_tz = pytz.timezone('Europe/Bucharest')
 
@@ -26,13 +29,16 @@ def yield_stocks(stock_list: list, from_time: int | None = None, to_time: int | 
     for stock in stock_list:
         try:
             print(f"Downloading {stock}")
-            stock_data_json = stock_requests.download_bvb(stock)  # , granularity, from_time, to_time)
-            yield stock, stock_data_json
+            if "." in stock:
+                stock_data = stock_requests.download_stooq(stock)
+            else:
+                stock_data = stock_requests.download_bvb(stock)  # , granularity, from_time, to_time)
+            yield stock, stock_data
         except Exception as e:
             print(f"ERROR downloading {stock} due to {e}")
 
 
-def check_alert(stock_obj):
+def check_alert(stock_obj: stocks.Stock) -> Stock | None:
     """
     Will read the stock_obj look at it's last 5 records, and if there are any alerts it will save return it as a short
     :param stock_obj:
@@ -41,20 +47,23 @@ def check_alert(stock_obj):
     try:
         if stock_obj.check_alerts(stock_obj):
             print(
-                f"ATTENTION: {stock_obj.stock_name}, {stock_obj.df.iloc[-1]['date']} {stock_obj.df.iloc[-1]['alert_type']}")
-            print(f"""More details: \n '{stock_obj.df.iloc[-5:]['date', 'close', 'histogram', 'rsi', 'ISA_9', 'ISB_26',
-            'ema', 'sma20', 'sma50', 'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0', 'SUPERTd_11_2.0',
-            'SUPERT_12_3.0', 'SUPERTd_12_3.0']}'""")
+                f"ATTENTION: {stock_obj.stock_name}, {stock_obj.df.iloc[-1]['date']} "
+                f"{stock_obj.df.iloc[-1]['alert_type']}")
+            print(f"""Last 5 days:
+'{stock_obj.df.iloc[-5:][['date', 'close', 'histogram', 'rsi', 'ISA_9', 'ISB_26',
+             'ema', 'sma20', 'sma50', 'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0', 'SUPERTd_11_2.0',
+             'SUPERT_12_3.0', 'SUPERTd_12_3.0']]}""")
             return stock_obj
     except Exception as e:
         print(f"ERROR checking {stock_obj} due to {e}")
+        return None
 
 
 def account_check(event):
-    if event.get('pass') == "pass":
-        return True
-    else:
-        return False
+    """
+    This function check account validity and return
+    """
+    return bool(event.get('pass') == "pass")
 
 
 def lambda_handler(event, context):
@@ -98,7 +107,7 @@ def lambda_handler(event, context):
 
     # Check how the event is coming!
     event = event.get("body", event)
-    if type(event) is str:
+    if isinstance(event, str):
         event = json.loads(event)
 
     if not account_check(event):
@@ -124,11 +133,11 @@ def lambda_handler(event, context):
         {stock.stock_name: stock.df.iloc[-1]['alert_type']} for stock in stock_objects
     ]
 
-    if len(stock_objects):
+    if len(stock_objects) > 0:
         stocks.save_stocks_to_s3(stock_objects,
                                  bucket=bucket_name,
                                  key=f"{key_prefix}-{datetime.now().strftime('%Y-%m-%d_%H%M')}",
-                                 type=file_type
+                                 file_type=file_type
                                  )
 
     # except Exception as e:

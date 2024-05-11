@@ -1,8 +1,11 @@
-### BVB source
+"""
+BVB Source
+"""
 from __future__ import annotations
 
-import pandas as pd
+import sys
 import time
+
 import requests
 
 
@@ -50,15 +53,11 @@ def download_bvb(stock, granularity="D", from_time: int | None = None, to_time: 
     else:
         raise Exception("Granularity not supported")
 
-    if from_time:
-        from_time = from_time
-    else:  # get the last year
+    if not from_time:  # get the last year
         from_time = int(time.time() - (
                 10 * 365 * 24 * 60 * 60))  # 1629820736 ani*zile*ore*min*sec
 
-    if to_time:
-        to_time = to_time
-    else:
+    if not to_time:
         to_time = int(time.time())  # Today
 
     params_core = {
@@ -71,5 +70,10 @@ def download_bvb(stock, granularity="D", from_time: int | None = None, to_time: 
         "to": to_time  # Wednesday, March 14, 2255 16:00:00
     }
 
-    r = requests.get(url_core, headers=headers, params=params_core, **kwargs)
+    r = {}
+    try:
+        r = requests.get(url_core, headers=headers, params=params_core, timeout=(5,30), **kwargs)
+    except requests.exceptions as e:
+        print(f"Request error: {e} {sys.exc_info()[0]}")
+
     return r.json()

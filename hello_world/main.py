@@ -7,7 +7,11 @@ import app
 # Definitions
 stock = "tvbetetf"
 storage = "storage"
-stock_list = ["DIGI"] #, "H2O", "DIGI" ] # , "BVB", "BRD", "M", "EL", "H2O", "SNP", "SNN", "TBK", "FP", "BUCU", "PTR", "SNO"]
+stock_list = ["nvda.us", "IS3N.DE", "eunl.de", "sxr8.de", "eun2.de", "iqqh.de", "spy4.de", "vusa.de", "3usl.uk"
+    , "ge.us", "amzn.us", "tsm.us", "irm.us", "msft.us", "cspx.uk", "suas.uk", "suws.uk", "iues.uk"
+    , "udvd.uk", "meta.us", "ogn.us"
+    , "H2O", "DIGI", "BVB", "BRD", "M", "EL", "SNP", "SNN", "TBK", "FP", "BUCU", "PTR", "SNO"]
+# AI.ES missing from stooq
 granularity = "day"
 from_date = int(time.time()) - (30 * 365 * 24 * 60 * 60)  # 1 year  # hmmm
 to_date = int(time.time())  # today
