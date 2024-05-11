@@ -1,7 +1,10 @@
 from __future__ import annotations
+"""
+Created on
+@author: <NAME>
+"""
 
 import io
-import json
 import time
 from datetime import datetime
 
@@ -38,6 +41,7 @@ class Stock:
         self.input_data = input_data
         self.granularity = granularity  # this should be optional, but anyway...
         self.data_format = data_format
+        self.ichimoku_prediction = pd.DataFrame()
 
         self._rename()
         self.calculate_all()
@@ -239,6 +243,9 @@ class Stock:
         return self.df[self.df['alert_type'] != ''].dropna()
 
     def calculate_all(self):
+        """
+        Calculate all
+        """
         self._calculate_macd()
         self._calculate_rsi()
         self._calculate_ichimoku()
@@ -262,6 +269,9 @@ class Stock:
 
     # Optional getters/setters
     def get_df(self):
+        """
+        Returns the df
+        """
         return self.df
 
     def get_alerts(self):
@@ -303,23 +313,20 @@ class Stock:
         df = obj.add_alerts()
         df_index_as_int = df.index.astype(int)
         try:
-            if df_index_as_int[-1] > start_time:
-                return True
-            else:
-                return False
+            return bool(df_index_as_int[-1] > start_time)
         except IndexError:
             print(f"ERROR found in {df}")
             return False
 
 
-def save_stocks_to_s3(stock_objects: list, bucket: str, key: str, type: str = "csv"):
+def save_stocks_to_s3(stock_objects: list, bucket: str, key: str, file_type: str = "csv"):
     """
     Take a list of Stock objects concatenate all dataframes from it and save it to pickle(or csv) in a s3 bucket
     # TODO Add more saving options
     """
     df = pd.concat([obj.df for obj in stock_objects])
     s3_resource = boto3.resource('s3')
-    if type == "csv":
+    if file_type == "csv":
         key += ".csv"
         file_buffer = df.to_csv().encode("utf-8")
     else:
