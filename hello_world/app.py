@@ -5,6 +5,7 @@ import os
 import time
 from datetime import datetime
 
+import boto3
 import pytz
 
 from models import stock_requests, stocks
@@ -49,10 +50,10 @@ def check_alert(stock_obj: stocks.Stock) -> Stock | None:
             print(
                 f"ATTENTION: {stock_obj.stock_name}, {stock_obj.df.iloc[-1]['date']} "
                 f"{stock_obj.df.iloc[-1]['alert_type']}")
-            print(f"""Last 5 days:
-'{stock_obj.df.iloc[-5:][['date', 'close', 'histogram', 'rsi', 'ISA_9', 'ISB_26',
-             'ema', 'sma20', 'sma50', 'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0', 'SUPERTd_11_2.0',
-             'SUPERT_12_3.0', 'SUPERTd_12_3.0']]}""")
+            #             print(f"""Last 5 days:
+            # '{stock_obj.df.iloc[-5:][['date', 'close', 'histogram', 'rsi', 'ISA_9', 'ISB_26',
+            #              'ema', 'sma20', 'sma50', 'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0', 'SUPERTd_11_2.0',
+            #              'SUPERT_12_3.0', 'SUPERTd_12_3.0']]}""")
             return stock_obj
     except Exception as e:
         print(f"ERROR checking {stock_obj} due to {e}")
@@ -104,6 +105,7 @@ def lambda_handler(event, context):
     bucket_name = os.getenv("BUCKET_NAME", "test-bucket-keos")
     key_prefix = os.getenv("KEY_PREFIX", "alerts")
     file_type = os.getenv("FILE_TYPE", "csv")
+    topic_arn = os.getenv("TOPIC_ARN", "arn:aws:sns:us-east-1:811041629820:Test")
 
     # Check how the event is coming!
     event = event.get("body", event)
@@ -122,6 +124,7 @@ def lambda_handler(event, context):
             },
         }
 
+    alerts = message = "No alerts"
     # catch everything if is the case:
     stock_objects = []
     for stock in yield_stocks(event['stock_list']):
@@ -129,26 +132,30 @@ def lambda_handler(event, context):
         alert_obj = check_alert(stock)
         stock_objects.append(alert_obj) if alert_obj else None
 
-    alerts = [
-        {stock.stock_name: stock.df.iloc[-1]['alert_type']} for stock in stock_objects
-    ]
-
     if len(stock_objects) > 0:
+        alerts = [
+            {stock.stock_name: stock.df.iloc[-1]['alert_type']} for stock in stock_objects
+        ]
+        message = (
+            f"""At {datetime.now(eet_tz)} have the following: {alerts}""")
+
+        # Send SMS to Topic
+        sns_client = boto3.client('sns')
+        response = sns_client.publish(
+            TopicArn=topic_arn,
+            Message=message
+        )
+        print(f"INFO: {response}")
+
         stocks.save_stocks_to_s3(stock_objects,
                                  bucket=bucket_name,
                                  key=f"{key_prefix}-{datetime.now().strftime('%Y-%m-%d_%H%M')}",
                                  file_type=file_type
                                  )
+        print(f"INFO: Saved {len(stock_objects)} in "
+              f"https://{bucket_name}.s3.us-east-1.amazonaws.com/{key_prefix}-{datetime.now().strftime('%Y-%m-%d_%H%M')}.csv")
 
-    # except Exception as e:
-    #     print(f"ERROR: For event {event} failed with {e}")
-    #     message = f"Failed for event {event} with error: {e}"
-    #     alerts = f"Error"
-
-    alerts = alerts if alerts else "No alerts"
-    message = (
-        f"""At {datetime.now(eet_tz)} have the following: {alerts}""")
-    retur = {
+    result = {
         "statusCode": 200,
         "headers": {
             "Content-Type": "application/json",
@@ -166,5 +173,5 @@ def lambda_handler(event, context):
         },
     }
 
-    print("RESULT", retur)
-    return retur
+    print("RESULT", result)
+    return result

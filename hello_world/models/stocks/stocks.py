@@ -257,8 +257,8 @@ class Stock:
             print(f"For {self.stock_name} {self.df} got error {e}")
         self.add_alerts()
         self.df.dropna()
-        # print(f"{self.df.iloc[5:][['date', 'close', 'histogram', 'rsi', 'ISA_9', 'ISB_26', 'ema', 'sma20', 'sma50',
-        # 'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0', 'SUPERTd_11_2.0', 'SUPERT_12_3.0', 'SUPERTd_12_3.0']]}")
+        # print(f"{self.df.iloc[-15:][['date', 'close', 'histogram', 'rsi', 'ISA_9', 'ISB_26', 'ema', 'sma20', 'sma50',
+        #  'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0', 'SUPERTd_11_2.0', 'SUPERT_12_3.0', 'SUPERTd_12_3.0']]}")
         return self.df
 
     def save_to_pickle(self, storage: str | None = None, time_see: str | None = None, **kwargs) -> str:

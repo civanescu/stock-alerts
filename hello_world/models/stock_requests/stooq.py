@@ -18,5 +18,5 @@ def download_stooq(stock: str, start_date: str = None, end_date: str = None) -> 
 
 
 if __name__ == "__main__":
-    result = download_stooq("nvda.us")
+    result = download_stooq("btce.de")
     print(result)
