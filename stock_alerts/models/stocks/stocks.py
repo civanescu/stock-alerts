@@ -33,6 +33,11 @@ class Stock:
 
     def __init__(self, stock_name: str, input_data: pd.DataFrame | str | dict, granularity: str = "D",
                  data_format: str = "json"):
+        """
+        Constructor for the Stock class
+        Parameters:
+            - stock_name:
+        """
         self.stock_name = stock_name
         self.df = pd.DataFrame()
         self.input_data = input_data
@@ -246,6 +251,7 @@ class Stock:
         """
         Calculate all
         """
+        print(f'Computing {self.stock_name} signals')
         try:
             self._calculate_macd()
             self._calculate_rsi()
@@ -318,9 +324,9 @@ class Stock:
         df = obj.add_alerts()
         df_index_as_int = df.index.astype(int)
         try:
-            return bool(df_index_as_int[-1] > start_time)
-        except IndexError:
-            print(f"ERROR found in {df}")
+            return bool(df_index_as_int[-1] > start_time)  # to catch when issue with dataframe
+        except IndexError as e:
+            print(f"ERROR found in {df} \n {e}")
             return False
 
 

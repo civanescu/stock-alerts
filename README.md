@@ -1,5 +1,15 @@
 # stock_alerts
 
+## This project start from AWS example hello_world lambda with API Gateway. 
+Because the API gateway it's limited to 15sec I don't use it anymore, use directly the Lambda link.
+
+
+____
+
+
+Original documentation:
+=======================
+
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
 - hello_world - Code for the application's Lambda function.

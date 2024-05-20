@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from hello_world import app
+from stock_alerts import app
 
 
 @pytest.fixture()

@@ -3,7 +3,7 @@ from io import StringIO
 import pandas as pd
 import requests
 
-from hello_world.models.stock_requests.stooq import download_stooq
+from stock_alerts.models.stock_requests.stooq import download_stooq
 
 
 def test_successful_data_download(mocker):
