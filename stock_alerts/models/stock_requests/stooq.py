@@ -6,7 +6,7 @@ import requests
 
 
 def download_stooq(stock: str, start_date: str = None, end_date: str = None,
-                        timeout_seconds: int = 30) -> pd.DataFrame:
+                   timeout_seconds: int = 30) -> pd.DataFrame | None:
     """
     Stock data with timeout in seconds
     """
@@ -24,7 +24,7 @@ def download_stooq(stock: str, start_date: str = None, end_date: str = None,
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Dest': 'empty',
         'Accept-Language': 'en-US'
-        }
+    }
 
     try:
         response = requests.get(link, headers=headers, timeout=timeout_seconds)

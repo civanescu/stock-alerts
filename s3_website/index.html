@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html lang="en-EN">
-	<head>
-		<meta charset="UTF-8">
-		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-		<meta http-equiv="Pragma" content="no-cache" />
-		<meta http-equiv="Expires" content="0" />
-
-
 <!--
 
 Amazon S3 Bucket listing.
@@ -27,11 +18,23 @@ Copyright (C) 2008 Francesco Pasqualini
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+@Claudiu Ivanescu
+	Moved the JS code in separate file.
+	Extended the code to some specific calculation between 2 values minus taxes.
+
 -->
 
+<!DOCTYPE html>
+<html lang="en-EN">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
 		<title>Results</title>
 
-<SCRIPT src="index.js"></script>
+		<script src="index.js"></script>
 
 		<style>
 			.file-link { display: block; }
@@ -77,22 +80,25 @@ Copyright (C) 2008 Francesco Pasqualini
 	<label for="sell-price">Sell price per unit:</label>
 	<input type="number" id="sell-price" required>
 
+	<label for="tax-percent">Tax percent per operation</label>
+	<input type="number" id="tax-percent" value="0.006" required>
+
+	<label for="tax-fix-value">Tax fix value per operation</label>
+	<input type="number" id="tax-fix-value" value="3" required>
+
 	<button type="button" onclick="calculate()">Calculate</button>
 </form>
 	<div id="results">
 		<!-- Display resuilts -->
 	</div>
 </pre>
-<SMALL>
-<PRE>
-Amazon S3 Bucket list v 1.1
-</PRE>
-</SMALL>
 
 <script>
 	function calculate() {
-		const percent = 0.006;
-		const fix = 3;
+		// const percent = 0.006;
+		const percent = parseFloat(document.getElementById('tax-percent').value)
+		// const fix = 3;
+		const fix = parseFloat(document.getElementById('tax-fix-value').value)
 		const units = parseFloat(document.getElementById('units').value);
 		const buyPrice = parseFloat(document.getElementById('buy-price').value);
 		const sellPrice = parseFloat(document.getElementById('sell-price').value);
@@ -125,8 +131,7 @@ ${percentageGain.toFixed(2)}%</h3></td>
 </table>
 </b>
 </div>
-
-			`;
+`;
 	}
 </script>
 

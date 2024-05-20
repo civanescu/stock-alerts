@@ -33,7 +33,8 @@ def yield_stocks(stock_list: list, from_time: int | None = None, to_time: int | 
             if "." in stock:
                 stock_data = stock_requests.download_stooq(stock)
             else:
-                stock_data = stock_requests.download_bvb(stock)  # , granularity, from_time, to_time)
+                pass
+                # WIP add FB data
             yield stock, stock_data
         except Exception as e:
             print(f"ERROR downloading {stock} due to {e}")
@@ -50,10 +51,9 @@ def check_alert(stock_obj: stocks.Stock) -> Stock | None:
             print(
                 f"ATTENTION: {stock_obj.stock_name}, {stock_obj.df.iloc[-1]['date']} "
                 f"{stock_obj.df.iloc[-1]['alert_type']}")
-            #             print(f"""Last 5 days:
-            # '{stock_obj.df.iloc[-5:][['date', 'close', 'histogram', 'rsi', 'ISA_9', 'ISB_26',
-            #              'ema', 'sma20', 'sma50', 'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0', 'SUPERTd_11_2.0',
-            #              'SUPERT_12_3.0', 'SUPERTd_12_3.0']]}""")
+            # print(f"""Last 5 days: '{stock_obj.df.iloc[-5:][['date', 'close', 'histogram', 'rsi', 'ISA_9',
+            # 'ISB_26', 'ema', 'sma20', 'sma50', 'SUPERT_10_1.0', 'SUPERTd_10_1.0', 'SUPERT_11_2.0',
+            # 'SUPERTd_11_2.0', 'SUPERT_12_3.0', 'SUPERTd_12_3.0']]}""")
             return stock_obj
     except Exception as e:
         print(f"ERROR checking {stock_obj} due to {e}")
