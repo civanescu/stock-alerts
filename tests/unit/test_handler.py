@@ -1,6 +1,8 @@
+import json
+
 import pytest
 
-import app
+from stock_alerts import app
 
 
 @pytest.fixture()
@@ -8,12 +10,7 @@ def apigw_event():
     """ Generates API GW Event"""
 
     return {
-        "body": '{'
-                '"pass": "pass",'
-                '"stock_list": ['
-                '"mock"'
-                ']'
-                '}',
+        "body": '{ "test": "body"}',
         "resource": "/{proxy+}",
         "requestContext": {
             "resourceId": "123456",
@@ -66,8 +63,10 @@ def apigw_event():
 
 
 def test_lambda_handler(apigw_event):
+
     ret = app.lambda_handler(apigw_event, "")
+    data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
     assert "message" in ret["body"]
-    assert "event" in ret["body"]
+    assert data["message"] == "hello world"

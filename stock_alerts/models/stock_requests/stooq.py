@@ -6,12 +6,12 @@ import requests
 
 
 def download_stooq(stock: str, start_date: str = None, end_date: str = None,
-                   timeout_seconds: int = 30) -> pd.DataFrame | None:
+                   timeout_seconds: int = 30) -> pd.DataFrame:
     """
     Stock data with timeout in seconds
     """
     end_date = datetime.today() if end_date is None else end_date
-    start_date = end_date - timedelta(days=365) if start_date is None else start_date
+    start_date = end_date - timedelta(days=2 * 365) if start_date is None else start_date
     link = f'https://stooq.com/q/d/l/?s={stock}&d1={start_date.strftime("%Y%m%d")}&d2={end_date.strftime("%Y%m%d")}&i=d'
 
     headers = {
