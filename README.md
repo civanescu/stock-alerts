@@ -20,6 +20,8 @@ I planned the following phases:
 > Because I use XTB for operations and there the stocks are like nvda.us, udvd.uk and not all stocks (like udvd) are in yahoo finance, I use an open API that has limitation and also sometimes timeouts. Have to study more.     
 > At this moment the granularity is only daily.
 
+> You can use the AWS tutorial downhere and deploy magically!
+
 ### For phase 2, WIP after phase one will work without any problems
 
 > Add library and class for operating the DB data   
