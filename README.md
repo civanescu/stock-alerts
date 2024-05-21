@@ -1,13 +1,50 @@
 # stock_alerts
 
-## This project start from AWS example hello_world lambda with API Gateway. 
-Because the API gateway it's limited to 15sec I don't use it anymore, use directly the Lambda link.
+<u>Licensed under [GNU GPL](http://www.gnu.org/licenses/) terms</u>   
+Copyright (@) 2024 Claudiu Ivanescu</u>
 
+## This is an ongoing project that I'm doing in my spare time. 
 
+The scope is to monitor stock market for specific stocks, to create alerts based on technical instruments, to make AI predictions. The ideea is that some persons invest in stocks just a side activity and we want to be able to alert them in time to protect their money or also maybe if they monitor some stock specifically to show when the market will become bullish.    
+
+I planned the following phases:
+1. Create alerts based on technical signals, send by SMS or save in an Excel in a bucket.
+2. Add everything in a DB
+3. Automatize AI DeepLearning using one of the model LSTM, GRU or both.
+4. Make a frontend for it
+
+### For phase 1 we have the code here, I started it from the AWS template hello_world API Gateway.
+
+> Because the API gateway's limited to 15sec I don't use it anymore, I directly use the Lambda link. I didn't remove the Gateway to see integration in Phase 4.       
+> There is also the SMS in place, but it is bounded to a Topic and the Topic to specific telephone numbers.    
+> Because I use XTB for operations and there the stocks are like nvda.us, udvd.uk and not all stocks (like udvd) are in yahoo finance, I use an open API that has limitation and also sometimes timeouts. Have to study more.     
+> At this moment the granularity is only daily.
+
+### For phase 2, WIP after phase one will work without any problems
+
+> Add library and class for operating the DB data   
+> Still thinking between an RDS and a NoSQL
+
+### For phase 3, WIP, at this moment I have the EC Spot server that I start/stop to run the AI model and also the jupyter book the following is in place but not in this code, after phase one is closed I will start this.
+
+> I have to make it to be start/stop by Lambda or add StepFunctions (probably the best approach)    
+> I have to drop the jupyter book and run the code from python   
+> At this moment the prediction is based on the previous close dates Min/Max in -1/1 which is not ok. Have to upgrade to use features from signals 
+
+### For phase 4, we should use a Static JS page that will interogate the Lambda from behind and present the data.
+
+> At this moment there is a S3 JS (Copyright (C) 2008 Francesco Pasqualini) to see the content of bucket. You have to allow anybody to have access to files.  
+> Also, the page makes some financial evaluation if you have to pay any taxes between operations, so you can see what will be your practical gain   
+
+#### _TODO NOW: Implement tests for all methods and also in to check before merging_ 
+ 
+```
+If you want to give my full time to this let's discuss
+```
 ____
 
 
-Original documentation:
+Original Amazon AWS documentation:
 =======================
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
