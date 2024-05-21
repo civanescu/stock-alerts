@@ -5,6 +5,7 @@ Copyright (@) 2024 Claudiu Ivanescu</u>
 
 ## This is an ongoing project that I'm doing in my spare time. 
 
+The scope is to monitor stock market for specific stocks, to create alerts based on technical instruments, to make AI predictions. The ideea is that some persons invest in stocks just a side activity and we want to be able to alert them in time to protect their money or also maybe if they monitor some stock specifically to show when the market will become bullish.    
 
 I planned the following phases:
 1. Create alerts based on technical signals, send by SMS or save in an Excel in a bucket.
@@ -16,7 +17,8 @@ I planned the following phases:
 
 > Because the API gateway's limited to 15sec I don't use it anymore, I directly use the Lambda link. I didn't remove the Gateway to see integration in Phase 4.       
 > There is also the SMS in place, but it is bounded to a Topic and the Topic to specific telephone numbers.    
-> Because I use XTB for operations and there the stocks are like nvda.us, udvd.uk and not all stocks (like udvd) are in yahoo finance, I use an open API that has limitation and also sometimes timeouts. Have to study more.
+> Because I use XTB for operations and there the stocks are like nvda.us, udvd.uk and not all stocks (like udvd) are in yahoo finance, I use an open API that has limitation and also sometimes timeouts. Have to study more.     
+> At this moment the granularity is only daily.
 
 ### For phase 2, WIP after phase one will work without any problems
 
@@ -36,7 +38,9 @@ I planned the following phases:
 
 #### _TODO NOW: Implement tests for all methods and also in to check before merging_ 
  
-
+```
+If you want to give my full time to this let's discuss
+```
 ____
 
 
