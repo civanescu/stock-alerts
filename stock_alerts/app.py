@@ -37,8 +37,8 @@ def yield_stocks(stock_list: list, from_time: int | None = None, to_time: int | 
                 except Exception as e:  # failed use stooq
                     print(f"Failed yfinance request {e}, fallback to stooq")
                     stock_data = stock_requests.download_stooq(stock)
-            else:
-                stock_data = stock_requests.download_bvb(stock)  # , granularity, from_time, to_time)
+            else:  # this can be used for other kind of sources:
+                pass
             yield stock, stock_data
         except Exception as e:
             print(f"ERROR downloading {stock} due to {e}")
@@ -65,7 +65,7 @@ def check_alert(stock_obj: stocks.Stock) -> Stock | None:
 
 def account_check(event):
     """
-    # TODO: add realistic authentication
+    # TODO: add a realistic authentication
     This function check account validity and return
     """
     return bool(event.get('pass') == "pass")
