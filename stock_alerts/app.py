@@ -12,9 +12,6 @@ import yfinance
 from models import stock_requests, stocks
 from models.stocks import Stock
 
-# import models.stock_requests as stock_requests
-# import models.stocks as stocks
-
 eet_tz = pytz.timezone('Europe/Bucharest')
 
 
